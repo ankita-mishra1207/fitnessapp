@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.fitnessapp"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.fitnessapp"
@@ -225,11 +225,6 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("io.github.jan-tennert.supabase:auth-kt:2.5.0")
-    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.5.0")
-    implementation("io.github.jan-tennert.supabase:gotrue-kt:2.5.0")
-    implementation("io.github.jan-tennert.supabase:supabase-kt:2.5.0")
-    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.5.0")
 
     // Room
     implementation(libs.androidx.room.runtime)

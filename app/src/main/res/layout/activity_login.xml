@@ -68,12 +68,6 @@
         app:cornerRadius="12dp"
         android:backgroundTint="@color/accent_purple"/>
 
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/btn_google_sign_in"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
-
     <TextView
         android:id="@+id/tv_forgot_password"
         android:layout_width="wrap_content"

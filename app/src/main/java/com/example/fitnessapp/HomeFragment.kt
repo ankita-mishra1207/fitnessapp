@@ -183,6 +183,29 @@ class HomeFragment : Fragment() {
             showWeatherForecastDialog()
         }
 
+        // Quick Actions
+        view.findViewById<View>(R.id.card_water)?.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, WaterFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        view.findViewById<View>(R.id.card_bmi)?.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, ReportsFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        view.findViewById<View>(R.id.card_sleep)?.setOnClickListener {
+            Toast.makeText(context, "Sleep tracking coming soon!", Toast.LENGTH_SHORT).show()
+        }
+
+        view.findViewById<View>(R.id.card_burn)?.setOnClickListener {
+            Toast.makeText(context, "Burn estimator integrated in Reports", Toast.LENGTH_SHORT).show()
+        }
+
         val foodNameInput    = view.findViewById<android.widget.EditText>(R.id.edit_food_name)
         val logFoodButton    = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_add_food)
         val mealGroup        = view.findViewById<android.widget.RadioGroup>(R.id.rg_meals)

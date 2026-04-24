@@ -1,9 +1,35 @@
+# Gradle
 .gradle/
-.idea/
 build/
+
+# Local config
 local.properties
-secrets.properties
+
+# Android Studio
+.idea/
 *.iml
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Native build
+.externalNativeBuild/
+.cxx/
+
+# Captures
+/captures/
+
+# Logs
 *.log
+
+# Secrets (IMPORTANT 🔥)
+secrets.properties
+.env
+.env.*
+
+# Firebase (optional)
+google-services.json
+
+# Duplicate junk files (your case)
 * (1).*
