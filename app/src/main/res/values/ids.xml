@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="tv_scanner_status" type="id" />
+    <item name="ll_scanner_result" type="id" />
+    <item name="tv_scanned_food_name" type="id" />
+    <item name="tv_scanned_brand" type="id" />
+    <item name="tv_scanned_calories" type="id" />
+    <item name="tv_scanned_macros" type="id" />
+    <item name="tv_scanned_serving" type="id" />
+    <item name="btn_log_scanned_food" type="id" />
+    <item name="btn_scan_again" type="id" />
+</resources>

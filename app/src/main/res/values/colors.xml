@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="dark_header">#1B1B2F</color>
+    <color name="background_light">#F5F5F3</color>
+    <color name="accent_purple">#5E5CE6</color>
+    <color name="text_grey">#757575</color>
+    <color name="progress_grey">#E0E0E0</color>
+    <color name="green_success">#A8D672</color>
+    <color name="orange_warning">#FFB347</color>
+    <color name="blue_water">#4DABF7</color>
+</resources>
