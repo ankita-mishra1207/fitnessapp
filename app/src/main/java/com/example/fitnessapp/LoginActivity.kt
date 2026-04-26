@@ -22,9 +22,16 @@ class LoginActivity : AppCompatActivity() {
 
         // Auto login
         lifecycleScope.launch {
-            SupabaseManager.client.auth.sessionStatus.collectLatest {
-                if (it is SessionStatus.Authenticated) {
-                    startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+            SupabaseManager.client.auth.sessionStatus.collectLatest { status ->
+                if (status is SessionStatus.Authenticated) {
+                    val prefs = getSharedPreferences("FitnessAppPrefs", MODE_PRIVATE)
+                    val onboardingCompleted = prefs.getBoolean("onboarding_completed", false)
+                    
+                    if (onboardingCompleted) {
+                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                    } else {
+                        startActivity(Intent(this@LoginActivity, OnboardingActivity::class.java))
+                    }
                     finish()
                 }
             }

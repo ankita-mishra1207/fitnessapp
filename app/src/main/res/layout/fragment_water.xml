@@ -135,9 +135,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        android:text="+ 250 ml"
+                        android:layout_marginEnd="4dp"
+                        android:text="+250ml"
                         android:textAllCaps="false"
+                        android:padding="8dp"
                         app:cornerRadius="12dp" />
 
                     <com.google.android.material.button.MaterialButton
@@ -146,20 +147,60 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        android:text="+ 500 ml"
+                        android:layout_marginEnd="4dp"
+                        android:text="+500ml"
                         android:textAllCaps="false"
+                        android:padding="8dp"
                         app:cornerRadius="12dp" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_add_1000"
+                        android:id="@+id/btn_remove_250"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="+ 1 L"
+                        android:text="-250ml"
+                        android:textColor="@android:color/holo_red_dark"
+                        app:strokeColor="@android:color/holo_red_dark"
                         android:textAllCaps="false"
+                        android:padding="8dp"
                         app:cornerRadius="12dp" />
+                </LinearLayout>
+
+                <!-- Custom Add/Remove -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <EditText
+                        android:id="@+id/edit_water_custom"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Custom (ml)"
+                        android:inputType="number"
+                        android:textSize="14sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_custom_add"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="+"
+                        app:cornerRadius="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_custom_remove"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="-"
+                        app:backgroundTint="@android:color/holo_red_dark"
+                        app:cornerRadius="8dp" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

@@ -11,21 +11,22 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import io.github.jan.supabase.auth.auth
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private val requiredPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         arrayOf(
             android.Manifest.permission.ACTIVITY_RECOGNITION,
-            android.Manifest.permission.CAMERA,
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION
         )
     } else {
         arrayOf(
-            android.Manifest.permission.CAMERA,
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION
         )
@@ -90,9 +91,49 @@ class MainActivity : AppCompatActivity() {
 
         // Load default fragment
         if (savedInstanceState == null) {
-            loadFragment(HomeFragment())
+            val navigateTo = intent.getStringExtra("navigate_to")
+            if (navigateTo == "profile") {
+                loadFragment(ProfileFragment())
+                navView.selectedItemId = R.id.navigation_profile
+            } else {
+                loadFragment(HomeFragment())
+            }
             // Check if we were started by a Fitbit deep link (cold start)
             intent?.let { handleIntent(it) }
+        }
+
+        // --- NEW: Start Background Health Connect Sync ---
+        startAutoSync()
+    }
+
+    private fun startAutoSync() {
+        lifecycleScope.launch {
+            while (true) {
+                try {
+                    val client = androidx.health.connect.client.HealthConnectClient.getOrCreate(this@MainActivity)
+                    val granted = client.permissionController.getGrantedPermissions()
+                    
+                    if (granted.containsAll(HealthConnectManager.permissions)) {
+                        val data = HealthConnectManager.fetchTodayActivity(this@MainActivity)
+                        val activeTime = HealthConnectManager.fetchActiveTime(this@MainActivity)
+                        
+                        if (data != null) {
+                            val prefs = getSharedPreferences("FitnessAppPrefs", MODE_PRIVATE)
+                            prefs.edit().apply {
+                                putString("sync_steps", data.steps.toString())
+                                putString("sync_distance", "%.2f km".format(data.distanceKm))
+                                putString("sync_calories", data.caloriesBurned.toString())
+                                putString("sync_active_time", activeTime.toString())
+                                putInt("sync_resting_hr", data.heartRateResting)
+                                apply()
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.e("AutoSync", "Sync failed: ${e.message}")
+                }
+                delay(300_000) // Sync every 5 minutes
+            }
         }
     }
 

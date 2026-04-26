@@ -197,36 +197,27 @@
             android:background="#DDDDDD" />
 
         <!-- Health Connect Section -->
-        <TextView
-            android:id="@+id/tv_hc_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="⚪ Health Connect: Not Syncing"
-            android:textColor="@color/text_grey"
-            android:textSize="14sp" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="24dp"
             android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btn_sync_hc"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tv_hc_status"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#2E7D32"
-                android:text="Sync from Health Connect"
-                android:textAllCaps="false"
-                android:textColor="@color/white" />
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp"
+                android:textColor="@color/text_grey"
+                android:textSize="14sp"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/btn_reset_stats"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:text="Reset Today's Stats to 0"
                 android:textAllCaps="false"
                 android:textColor="#C62828" />

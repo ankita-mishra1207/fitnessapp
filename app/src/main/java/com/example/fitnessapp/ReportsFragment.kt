@@ -21,6 +21,7 @@ class ReportsFragment : Fragment() {
         val bmiStatusText = view.findViewById<TextView>(R.id.tv_bmi_status)
         val dietItemsLayout = view.findViewById<LinearLayout>(R.id.ll_diet_items)
         val totalStepsText = view.findViewById<TextView>(R.id.tv_report_total_steps)
+        val kcalBurnedText = view.findViewById<TextView>(R.id.tv_report_kcal_burned)
 
         val sharedPref = activity?.getSharedPreferences("FitnessAppPrefs", Context.MODE_PRIVATE)
         
@@ -30,6 +31,11 @@ class ReportsFragment : Fragment() {
         val bmi = if (height > 0) weight / ((height / 100) * (height / 100)) else 22.5f
 
         bmiValueText.text = "%.1f".format(bmi)
+        
+        // Burn Estimator (BMR based on weight/height)
+        val age = 25
+        val bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5
+        kcalBurnedText.text = String.format("%,d", bmr.toInt())
         
         val status: String
         val recommendations: List<Pair<String, String>>

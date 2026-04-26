@@ -32,14 +32,34 @@ class WaterFragment : Fragment() {
 
         val btn250 = view.findViewById<Button>(R.id.btn_add_250)
         val btn500 = view.findViewById<Button>(R.id.btn_add_500)
-        val btn1000 = view.findViewById<Button>(R.id.btn_add_1000)
+        val btnRemove250 = view.findViewById<Button>(R.id.btn_remove_250)
+        
+        val editCustom = view.findViewById<android.widget.EditText>(R.id.edit_water_custom)
+        val btnCustomAdd = view.findViewById<Button>(R.id.btn_custom_add)
+        val btnCustomRemove = view.findViewById<Button>(R.id.btn_custom_remove)
 
         loadData()
         updateUI()
 
         btn250.setOnClickListener { addWater(0.25f) }
         btn500.setOnClickListener { addWater(0.5f) }
-        btn1000.setOnClickListener { addWater(1.0f) }
+        btnRemove250.setOnClickListener { addWater(-0.25f) }
+
+        btnCustomAdd.setOnClickListener {
+            val amountMl = editCustom.text.toString().toFloatOrNull()
+            if (amountMl != null) {
+                addWater(amountMl / 1000f)
+                editCustom.setText("")
+            }
+        }
+
+        btnCustomRemove.setOnClickListener {
+            val amountMl = editCustom.text.toString().toFloatOrNull()
+            if (amountMl != null) {
+                addWater(-amountMl / 1000f)
+                editCustom.setText("")
+            }
+        }
 
         return view
     }
@@ -53,9 +73,15 @@ class WaterFragment : Fragment() {
 
     private fun addWater(amount: Float) {
         currentWater += amount
+        if (currentWater < 0) currentWater = 0f
         saveData()
         updateUI()
-        Toast.makeText(context, "Added ${if (amount < 1) "${(amount * 1000).toInt()}ml" else "${amount}L"}", Toast.LENGTH_SHORT).show()
+        val message = if (amount >= 0) {
+            "Added ${if (amount < 1 && amount > 0) "${(amount * 1000).toInt()}ml" else "${amount}L"}"
+        } else {
+            "Removed ${if (Math.abs(amount) < 1) "${(Math.abs(amount) * 1000).toInt()}ml" else "${Math.abs(amount)}L"}"
+        }
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun saveData() {

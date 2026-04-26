@@ -18,6 +18,8 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 class ProfileFragment : Fragment() {
 
@@ -42,8 +44,9 @@ class ProfileFragment : Fragment() {
 
         // ── Health Connect UI ─────────────────────────────────────────────
         val hcStatusText = view.findViewById<TextView?>(R.id.tv_hc_status)
-        val syncHcBtn    = view.findViewById<Button?>(R.id.btn_sync_hc)
         val resetStatsBtn = view.findViewById<Button?>(R.id.btn_reset_stats)
+
+        hcStatusText?.visibility = View.GONE
 
         val requestPermissionLauncher = registerForActivityResult(
             PermissionController.createRequestPermissionResultContract()
@@ -55,47 +58,6 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        syncHcBtn?.setOnClickListener {
-            val ctx = context ?: return@setOnClickListener
-            lifecycleScope.launch {
-                if (!HealthConnectManager.isAvailable(ctx)) {
-                    Toast.makeText(ctx, "Health Connect is not installed", Toast.LENGTH_LONG).show()
-                    HealthConnectManager.installHealthConnect(ctx)
-                    return@launch
-                }
-
-                val client = androidx.health.connect.client.HealthConnectClient.getOrCreate(ctx)
-                val granted = client.permissionController.getGrantedPermissions()
-                
-                if (granted.containsAll(HealthConnectManager.permissions)) {
-                    syncHcBtn.isEnabled = false
-                    syncHcBtn.text = "Syncing..."
-                    
-                    val data = HealthConnectManager.fetchTodayActivity(ctx)
-                    if (data != null) {
-                        hcStatusText?.text = "✅ Health Connect: Last sync today"
-                        
-                        // Save to SharedPreferences so HomeFragment can see it
-                        val prefs = ctx.getSharedPreferences("FitnessAppPrefs", Context.MODE_PRIVATE)
-                        prefs.edit().apply {
-                            putString("sync_steps", data.steps.toString())
-                            putString("sync_distance", "%.2f km".format(data.distanceKm))
-                            putString("sync_calories", data.caloriesBurned.toString())
-                            putInt("sync_resting_hr", data.heartRateResting)
-                            apply()
-                        }
-
-                        Toast.makeText(ctx, "Synced ${data.steps} steps from Health Connect", Toast.LENGTH_LONG).show()
-                    } else {
-                        Toast.makeText(ctx, "Failed to sync Health Connect data", Toast.LENGTH_SHORT).show()
-                    }
-                    syncHcBtn.isEnabled = true
-                    syncHcBtn.text = "Sync from Health Connect"
-                } else {
-                    requestPermissionLauncher.launch(HealthConnectManager.permissions)
-                }
-            }
-        }
 
         resetStatsBtn?.setOnClickListener {
             val ctx = context ?: return@setOnClickListener
@@ -171,15 +133,15 @@ class ProfileFragment : Fragment() {
                     val supabaseUser = SupabaseManager.client.auth.currentUserOrNull()
                     if (supabaseUser != null) {
                         SupabaseManager.client.from("profiles").upsert(
-                            mapOf(
-                                "id" to supabaseUser.id,
-                                "name" to user.fullName,
-                                "email" to user.email,
-                                "weight" to user.weight,
-                                "height" to user.height,
-                                "step_goal" to user.stepGoal,
-                                "water_goal" to user.waterGoal
-                            )
+                            buildJsonObject {
+                                put("id", supabaseUser.id)
+                                put("name", user.fullName)
+                                put("email", user.email)
+                                put("weight", user.weight)
+                                put("height", user.height)
+                                put("step_goal", user.stepGoal)
+                                put("water_goal", user.waterGoal)
+                            }
                         )
                         Toast.makeText(context, "Profile synced to cloud!", Toast.LENGTH_SHORT).show()
                     }

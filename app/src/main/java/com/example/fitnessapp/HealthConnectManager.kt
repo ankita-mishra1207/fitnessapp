@@ -8,7 +8,11 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
+import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.HeightRecord
+import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import java.time.Instant
@@ -19,9 +23,21 @@ object HealthConnectManager {
 
     val permissions = setOf(
         HealthPermission.getReadPermission(StepsRecord::class),
+        HealthPermission.getWritePermission(StepsRecord::class),
         HealthPermission.getReadPermission(DistanceRecord::class),
+        HealthPermission.getWritePermission(DistanceRecord::class),
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
-        HealthPermission.getReadPermission(HeartRateRecord::class)
+        HealthPermission.getWritePermission(TotalCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
+        HealthPermission.getWritePermission(ActiveCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(HeartRateRecord::class),
+        HealthPermission.getWritePermission(HeartRateRecord::class),
+        HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+        HealthPermission.getWritePermission(ExerciseSessionRecord::class),
+        HealthPermission.getReadPermission(HeightRecord::class),
+        HealthPermission.getWritePermission(HeightRecord::class),
+        HealthPermission.getReadPermission(WeightRecord::class),
+        HealthPermission.getWritePermission(WeightRecord::class)
     )
 
     fun isAvailable(context: Context): Boolean {
@@ -64,15 +80,60 @@ object HealthConnectManager {
             val distanceMeters = response[DistanceRecord.DISTANCE_TOTAL]?.inMeters ?: 0.0
             val calories = response[TotalCaloriesBurnedRecord.ENERGY_TOTAL]?.inKilocalories ?: 0.0
 
-            return HealthData(
+            val healthData = HealthData(
                 steps = steps,
                 distanceKm = distanceMeters / 1000.0,
                 caloriesBurned = calories.toLong(),
                 heartRateResting = 72 // Placeholder or fetch actual HR
             )
+            
+            // Log for debugging
+            android.util.Log.d("HealthConnect", "Fetched data: $healthData")
+            
+            return healthData
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("HealthConnect", "Error fetching activity", e)
             return null
+        }
+    }
+
+    suspend fun fetchActiveTime(context: Context): Long {
+        try {
+            val client = HealthConnectClient.getOrCreate(context)
+            val startTime = ZonedDateTime.now().with(LocalTime.MIN).toInstant()
+            val endTime = Instant.now()
+            
+            val response = client.readRecords(
+                androidx.health.connect.client.request.ReadRecordsRequest(
+                    recordType = StepsRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            
+            // Approximate active time based on steps duration or exercise sessions
+            // For simplicity, let's try reading Exercise Sessions if available
+            val exerciseResponse = client.readRecords(
+                androidx.health.connect.client.request.ReadRecordsRequest(
+                    recordType = androidx.health.connect.client.records.ExerciseSessionRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            
+            var totalMinutes = 0L
+            exerciseResponse.records.forEach { record ->
+                val duration = java.time.Duration.between(record.startTime, record.endTime)
+                totalMinutes += duration.toMinutes()
+            }
+            
+            if (totalMinutes == 0L && response.records.isNotEmpty()) {
+                // Fallback: estimate active time from steps (rough estimate: 1 min per 100 steps)
+                val steps = response.records.sumOf { it.count }
+                totalMinutes = steps / 100
+            }
+            
+            return totalMinutes
+        } catch (e: Exception) {
+            return 0
         }
     }
 }

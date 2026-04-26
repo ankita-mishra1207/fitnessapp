@@ -12,6 +12,6 @@
     <string name="diet_balanced">Balanced Diet</string>
     <string name="diet_high_calorie">High Calorie Diet</string>
     <string name="water_goal_display">of %.1fL daily goal</string>
-    <string name="workout_logged">Workout Logged: %s for %s mins</string>
+    <string name="workout_logged">Workout Logged: %1$s for %2$s mins</string>
     <string name="default_web_client_id">638435251813-o398me15kef1ca26osfpli7qhie6152a.apps.googleusercontent.com</string>
 </resources>

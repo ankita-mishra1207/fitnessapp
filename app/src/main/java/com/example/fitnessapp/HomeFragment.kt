@@ -27,10 +27,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.from
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
 import org.json.JSONObject
 import java.net.URL
 
@@ -141,7 +143,7 @@ class HomeFragment : Fragment() {
     )
 
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if (key == "sync_steps" || key == "sync_distance" || key == "sync_calories" || key == "sync_active_min" || key == "user_name" || key == "step_goal") {
+        if (key == "sync_steps" || key == "sync_distance" || key == "sync_calories" || key == "sync_active_time" || key == "user_name" || key == "step_goal") {
             activity?.runOnUiThread { refreshDashboard() }
         }
     }
@@ -199,11 +201,17 @@ class HomeFragment : Fragment() {
         }
 
         view.findViewById<View>(R.id.card_sleep)?.setOnClickListener {
-            Toast.makeText(context, "Sleep tracking coming soon!", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, SleepFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         view.findViewById<View>(R.id.card_burn)?.setOnClickListener {
-            Toast.makeText(context, "Burn estimator integrated in Reports", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, ReportsFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         val foodNameInput    = view.findViewById<android.widget.EditText>(R.id.edit_food_name)
@@ -365,11 +373,12 @@ class HomeFragment : Fragment() {
         // Use synced data from Health Connect (saved in ProfileFragment)
         val stepsStr     = sharedPref.getString("sync_steps", "0") ?: "0"
         val distStr      = sharedPref.getString("sync_distance", "0.00 km") ?: "0.00 km"
+        val burnedCalStr = sharedPref.getString("sync_calories", "0") ?: "0"
         
         val steps        = stepsStr.toIntOrNull() ?: 0
         val distance     = distStr.replace(" km", "").toDoubleOrNull() ?: 0.0
-        val totalCal     = bCal + lCal + dCal
-        val calories     = totalCal.toString()
+        val foodCal      = bCal + lCal + dCal
+        val burnedCal    = burnedCalStr.toIntOrNull() ?: 0
         val activeMin    = sharedPref.getString("sync_active_time", "0") ?: "0"
         
         val stepGoal     = stepGoalStr.toIntOrNull() ?: 10000
@@ -382,7 +391,7 @@ class HomeFragment : Fragment() {
 
         stepsText?.text    = String.format(Locale.getDefault(), "%,d", steps)
         distanceText?.text = "%.2f km".format(distance)
-        caloriesText?.text = calories
+        caloriesText?.text = burnedCal.toString()
         activeTimeText?.text = "$activeMin min"
 
         stepsProgressText?.text = "${String.format(Locale.getDefault(), "%,d", steps)} / ${String.format(Locale.getDefault(), "%,d", stepGoal)}"

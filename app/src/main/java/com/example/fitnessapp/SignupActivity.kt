@@ -1,5 +1,6 @@
 package com.example.fitnessapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
@@ -59,13 +60,22 @@ class SignupActivity : AppCompatActivity() {
                                 put("name", name)
                                 put("age", 0)
                                 put("weight", 0.0)
+                                put("height", 0)
+                                put("step_goal", 10000)
+                                put("water_goal", 2.5)
                                 put("goal", "fitness")
                             }
                         )
+                        // Set login status
+                        val prefs = getSharedPreferences("FitnessAppPrefs", MODE_PRIVATE)
+                        prefs.edit().putBoolean("is_logged_in", true).apply()
+                        
+                        Toast.makeText(this@SignupActivity, "Signup Success", Toast.LENGTH_LONG).show()
+                        
+                        // Navigate to Onboarding to fill details
+                        startActivity(Intent(this@SignupActivity, OnboardingActivity::class.java))
+                        finish()
                     }
-
-                    Toast.makeText(this@SignupActivity, "Signup Success", Toast.LENGTH_LONG).show()
-                    finish()
 
                 } catch (e: Exception) {
                     Toast.makeText(this@SignupActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
