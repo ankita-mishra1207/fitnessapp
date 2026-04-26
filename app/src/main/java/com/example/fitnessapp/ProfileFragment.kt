@@ -46,7 +46,19 @@ class ProfileFragment : Fragment() {
         val hcStatusText = view.findViewById<TextView?>(R.id.tv_hc_status)
         val resetStatsBtn = view.findViewById<Button?>(R.id.btn_reset_stats)
 
-        hcStatusText?.visibility = View.GONE
+        // Check Health Connect Status
+        if (HealthConnectManager.isAvailable(requireContext())) {
+            hcStatusText?.visibility = View.VISIBLE
+            hcStatusText?.text = "✅ Health Connect is active"
+            hcStatusText?.setTextColor(resources.getColor(android.R.color.holo_green_dark, null))
+        } else {
+            hcStatusText?.visibility = View.VISIBLE
+            hcStatusText?.text = "⚠️ Health Connect not found"
+            hcStatusText?.setTextColor(resources.getColor(android.R.color.holo_red_dark, null))
+            hcStatusText?.setOnClickListener {
+                HealthConnectManager.installHealthConnect(requireContext())
+            }
+        }
 
         val requestPermissionLauncher = registerForActivityResult(
             PermissionController.createRequestPermissionResultContract()
