@@ -40,9 +40,6 @@ FitnessApp is a modern, feature-rich Android application designed to help users 
 3.  Configure your Supabase URL and Key in `secrets.properties` (see `secrets.properties.example`).
 4.  Build and run the app on your device!
 
-## 📸 Screenshots
-*(Coming Soon - Add your screenshots here!)*
-
 ## 📄 License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
